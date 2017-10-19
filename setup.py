@@ -6,12 +6,12 @@ from setuptools import setup
 with open('README.rst') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
+with open('LICENSE.txt') as f:
     license = f.read()
 
 setup(
     name='teslatoken',
-    version='0.1.0',
+    version='0.1.2',
     description='Tool to create authorization tokens for Tesla cars.',
     long_description=readme,
     license=license,
