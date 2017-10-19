@@ -16,10 +16,16 @@ The tool is intended to use as a stand alone tool rather than including the modu
 Installation
 ============
 
-- Download the repository
-- Install the package with: ``python setup.py install``
+There are two ways to install the tool:
 
-Example
-=======
+- Install with: ``§ pip install teslatoken``
+
+or
+
+- Download the repository
+- Install the package with: ``§ python setup.py install``
+
+Usage Example
+=============
 
 ``§ teslatoken -u your.username@tesla.com -p yourpassword``
