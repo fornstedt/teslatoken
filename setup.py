@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*-
+
+from setuptools import setup
+
+
+with open('README.md') as f:
+    readme = f.read()
+
+with open('LICENSE') as f:
+    license = f.read()
+
+setup(
+    name='teslatoken',
+    version='0.1.0',
+    description='Tool to create authorization tokens for Tesla cars.',
+    long_description=readme,
+    license=license,
+    keywords='tesla authorization token',
+    py_modules=['teslatoken'],
+    author='Eric Fornstedt',
+    author_email='eric.fornstedt@gmail.com',
+    url='https://github.com/eric1980/teslatoken',
+    entry_points={'console_scripts': ['teslatoken=teslatoken:main']}
+)
