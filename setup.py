@@ -17,6 +17,7 @@ setup(
     license=license,
     keywords='tesla authorization token',
     py_modules=['teslatoken'],
+    install_requires = ['certifi'],
     author='Eric Fornstedt',
     author_email='eric.fornstedt@gmail.com',
     url='https://github.com/eric1980/teslatoken',
