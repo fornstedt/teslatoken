@@ -4,6 +4,7 @@ import sys
 import argparse
 import json
 import datetime
+import certifi
 
 try:
     from urllib import urlencode
@@ -33,7 +34,7 @@ def main():
     if args.quiet and args.output is None:
         error('--quiet can only be combined with --output')
 
-    resp = urlopen(Request('https://pastebin.com/raw/YiLPDggh')).read()
+    resp = urlopen(Request('https://pastebin.com/raw/YiLPDggh'), cafile = certifi.where()).read()
     client_data = json.loads(b'{'+resp.rstrip(b',')+b'}')
 
     headers = {'client_id': client_data['OWNERAPI_CLIENT_ID']}
@@ -48,7 +49,7 @@ def main():
 
     try:
         request = Request('https://owner-api.teslamotors.com/oauth/token', data=urlencode(headers).encode('utf-8'))
-        response = json.loads(urlopen(request).read())
+        response = json.loads(urlopen(request, cafile = certifi.where()).read())
     except HTTPError as err:
         error('An HTTP error occurred during authorization: %d: %s' % (err.code, err.msg))
     except URLError as err:
