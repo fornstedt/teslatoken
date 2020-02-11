@@ -11,7 +11,7 @@ with open('LICENSE.txt') as f:
 
 setup(
     name='teslatoken',
-    version='0.1.3',
+    version='0.1.4',
     description='Tool to create authorization tokens for Tesla cars.',
     long_description=readme,
     license=license,
