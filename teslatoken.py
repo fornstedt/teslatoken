@@ -25,6 +25,8 @@ def main():
     parser.add_argument("-r", "--refresh", metavar='REFRESH_TOKEN', default=None, help="Refresh token for an access token")
     parser.add_argument("-q", "--quiet", action='store_true', help="Do not print token to stdout")
     parser.add_argument('--version', action='version', version='%(prog)s 0.1')
+    parser.add_argument('--revoke', action='store_true', help="Revokes a previously acquired access token")
+    parser.add_argument('-a', '--access_token', metavar='ACCESS_TOKEN', help="The access token to be revoked")
 
     args = parser.parse_args()
 
@@ -40,6 +42,8 @@ def main():
 
     headers = {'client_id': client_data['OWNERAPI_CLIENT_ID']}
 
+    request_url = 'https://owner-api.teslamotors.com/oauth/token';
+    acquire_token = True
     if args.username and args.password:
         headers.update({'grant_type': 'password', 'email': args.username, 'password': args.password})
         headers.update({'client_secret': client_data['OWNERAPI_CLIENT_SECRET']})
@@ -50,28 +54,35 @@ def main():
         headers.update({'client_secret': client_data['OWNERAPI_CLIENT_SECRET']})
     elif args.refresh:
         headers.update({'grant_type': 'refresh_token', 'refresh_token': args.refresh})
+    elif args.revoke and args.access_token:
+        request_url = 'https://owner-api.teslamotors.com/oauth/revoke';
+        acquire_token = False
+        headers.update({'token': args.access_token})
     else:
         error('Either username/password or refresh token must be provided.')
 
     try:
-        request = Request('https://owner-api.teslamotors.com/oauth/token', data=urlencode(headers).encode('utf-8'))
+        request = Request(request_url, data=urlencode(headers).encode('utf-8'))
         response = json.loads(urlopen(request, cafile = certifi.where()).read())
     except HTTPError as err:
         error('An HTTP error occurred during authorization: %d: %s' % (err.code, err.msg))
     except URLError as err:
         error('An URL error occurred during authorization: %s' % err.reason)
 
-    if not args.quiet:
-        print('\n')
-        print(' Access Token: %s' % response['access_token'])
-        print('Refresh Token: %s' % response['refresh_token'])
-        print(' Requested at: %s' % readable_time(response['created_at']))
-        print('   Expires at: %s' % readable_time((response['created_at'] + response['expires_in'])))
+    if acquire_token:
+        if not args.quiet:
+            print('\n')
+            print(' Access Token: %s' % response['access_token'])
+            print('Refresh Token: %s' % response['refresh_token'])
+            print(' Requested at: %s' % readable_time(response['created_at']))
+            print('   Expires at: %s' % readable_time((response['created_at'] + response['expires_in'])))
 
-    if args.output:
-        with open(args.output, 'w') as outfile:
-            json.dump(response, outfile, sort_keys=True, indent=2)
-        print('\nAccess token written to %s' % args.output)
+        if args.output:
+            with open(args.output, 'w') as outfile:
+                json.dump(response, outfile, sort_keys=True, indent=2)
+            print('\nAccess token written to %s' % args.output)
+    else:
+        print('\nSuccessfully revoked')
 
 
 def readable_time(timestamp):
