@@ -21,6 +21,7 @@ def main():
     parser.add_argument("-o", "--output", metavar='FILE', default=None, help="Write to file FILE (json format)")
     parser.add_argument("-u", "--username", metavar='USER', default=None, help="Username for your MyTesla account")
     parser.add_argument("-p", "--password", metavar='PASS', default=None, help="Password for your MyTesla account")
+    parser.add_argument("-c", "--credential_file", metavar='CREDENTIAL_FILE', default=None, help="File which contains your MyTesla account password")
     parser.add_argument("-r", "--refresh", metavar='REFRESH_TOKEN', default=None, help="Refresh token for an access token")
     parser.add_argument("-q", "--quiet", action='store_true', help="Do not print token to stdout")
     parser.add_argument('--version', action='version', version='%(prog)s 0.1')
@@ -41,6 +42,11 @@ def main():
 
     if args.username and args.password:
         headers.update({'grant_type': 'password', 'email': args.username, 'password': args.password})
+        headers.update({'client_secret': client_data['OWNERAPI_CLIENT_SECRET']})
+    elif args.username and args.credential_file:
+        with open(args.credential_file) as f:
+            credentials = f.readline().strip()
+        headers.update({'grant_type': 'password', 'email': args.username, 'password': credentials})
         headers.update({'client_secret': client_data['OWNERAPI_CLIENT_SECRET']})
     elif args.refresh:
         headers.update({'grant_type': 'refresh_token', 'refresh_token': args.refresh})
