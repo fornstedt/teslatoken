@@ -25,8 +25,7 @@ def main():
     parser.add_argument("-r", "--refresh", metavar='REFRESH_TOKEN', default=None, help="Refresh token for an access token")
     parser.add_argument("-q", "--quiet", action='store_true', help="Do not print token to stdout")
     parser.add_argument('--version', action='version', version='%(prog)s 0.1')
-    parser.add_argument('--revoke', action='store_true', help="Revokes a previously acquired access token")
-    parser.add_argument('-a', '--access_token', metavar='ACCESS_TOKEN', help="The access token to be revoked")
+    parser.add_argument('--revoke', metavar='REVOKE_TOKEN', default=None, help="Revokes a previously acquired access token")
 
     args = parser.parse_args()
 
@@ -44,22 +43,22 @@ def main():
 
     request_url = 'https://owner-api.teslamotors.com/oauth/token';
     acquire_token = True
-    if args.username and args.password:
-        headers.update({'grant_type': 'password', 'email': args.username, 'password': args.password})
-        headers.update({'client_secret': client_data['OWNERAPI_CLIENT_SECRET']})
-    elif args.username and args.credential_file:
-        with open(args.credential_file) as f:
-            credentials = f.readline().strip()
+    if args.username and (args.password or args.credential_file):
+        if args.password:
+            credentials = args.password
+        else:
+            with open(args.credential_file) as f:
+                credentials = f.readline().strip()
         headers.update({'grant_type': 'password', 'email': args.username, 'password': credentials})
         headers.update({'client_secret': client_data['OWNERAPI_CLIENT_SECRET']})
     elif args.refresh:
         headers.update({'grant_type': 'refresh_token', 'refresh_token': args.refresh})
-    elif args.revoke and args.access_token:
+    elif args.revoke:
         request_url = 'https://owner-api.teslamotors.com/oauth/revoke';
         acquire_token = False
-        headers.update({'token': args.access_token})
+        headers.update({'token': args.revoke})
     else:
-        error('Either username/password or refresh token must be provided.')
+        error('Either username/password or refresh/revoke token must be provided.')
 
     try:
         request = Request(request_url, data=urlencode(headers).encode('utf-8'))
